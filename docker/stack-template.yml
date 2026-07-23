@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  ai-workspace:
+    image: pytorch-desktop:latest
+    container_name: ${CONTAINER_NAME:-container1}
+    restart: always
+    ipc: host
+
+    # 传递端口段变量给容器内部计算
+    environment:
+      - PORT_RANGE=${PORT_RANGE:-5900-5909}
+
+    # 直接将 10 个端口段 1-to-1 映射进容器
+    ports:
+      - "${PORT_RANGE:-5900-5909}:${PORT_RANGE:-5900-5909}"
+
+    # 所有文件挂载到 /hdd1
+    volumes:
+      - ${CONTAINER_DIR:-/hdd1/docker/container1}:/home/n401
+
+    # 挂载双卡 RTX 3090 GPU
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
