@@ -1,0 +1,63 @@
+version: '3.8'
+
+# 定义公共模板/配置块
+x-pytorch-template: &pytorch-template
+  image: pytorch-desktop:latest
+  restart: always
+  ipc: host
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+
+services:
+  # 容器 1 (端口 5900-5909)
+  n401_user1:
+    <<: *pytorch-template
+    container_name: pytorch_desktop_n401
+    environment:
+      - PORT_RANGE=5900-5909
+    ports:
+      - "5900-5909:5900-5909"
+    volumes:
+      - /hdd1/docker/n401:/home/n401
+      - /hdd1/docker/public:/public
+
+  # 容器 2 (端口 5910-5919)
+  n401_user2:
+    <<: *pytorch-template
+    container_name: pytorch_desktop_dc
+    environment:
+      - PORT_RANGE=5910-5919
+    ports:
+      - "5910-5919:5910-5919"
+    volumes:
+      - /hdd1/docker/dc:/home/n401
+      - /hdd1/docker/public:/public
+
+  # 容器 3 (端口 5920-5929)
+  n401_user3:
+    <<: *pytorch-template
+    container_name: pytorch_desktop_user3
+    environment:
+      - PORT_RANGE=5920-5929
+    ports:
+      - "5920-5929:5920-5929"
+    volumes:
+      - /hdd1/docker/user3:/home/n401
+      - /hdd1/docker/public:/public
+
+  # 容器 4 (端口 5930-5939)
+  n401_user4:
+    <<: *pytorch-template
+    container_name: pytorch_desktop_user4
+    environment:
+      - PORT_RANGE=5930-5939
+    ports:
+      - "5930-5939:5930-5939"
+    volumes:
+      - /hdd1/docker/user4:/home/n401
+      - /hdd1/docker/public:/public
